@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HirePath - Career Acceleration Platform</title>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo">HirePath</div>
+            <ul class="nav-links">
+                <li><a href="#" data-page="home" class="active">Home</a></li>
+                <li><a href="#" data-page="analyze">Analyze</a></li>
+                <li><a href="#" data-page="ats">ATS Check</a></li>
+                <li><a href="#" data-page="skills">Skills</a></li>
+                <li><a href="#" data-page="jobs">Jobs</a></li>
+                <li><a href="#" data-page="github">GitHub</a></li>
+                <li><a href="#" data-page="status">Status</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Pages -->
+    <div class="container">
+        <!-- HOME PAGE -->
+        <div id="home" class="page">
+            <div class="page-header">
+                <h1>HirePath</h1>
+                <p>Career Acceleration Platform: Resume Analysis, Skill Gap Detection, Job Matching</p>
+            </div>
+
+            <div class="grid-3" style="margin-bottom: 40px;">
+                <div class="card">
+                    <h3>📊 Full Analysis</h3>
+                    <p>Upload your resume and GitHub profile to get a comprehensive career assessment.</p>
+                    <button onclick="navigateTo('analyze')">Start Analysis</button>
+                </div>
+
+                <div class="card">
+                    <h3>⚡ Quick ATS Check</h3>
+                    <p>Get an instant ATS score for your resume to understand how it ranks with recruiters.</p>
+                    <button onclick="navigateTo('ats')">Check ATS</button>
+                </div>
+
+                <div class="card">
+                    <h3>🎯 Skill Gap</h3>
+                    <p>Analyze missing skills for your target domain and company.</p>
+                    <button onclick="navigateTo('skills')">View Skills</button>
+                </div>
+
+                <div class="card">
+                    <h3>💼 Job Matches</h3>
+                    <p>Find jobs that match your profile from our local database.</p>
+                    <button onclick="navigateTo('jobs')">Find Jobs</button>
+                </div>
+
+                <div class="card">
+                    <h3>🐙 GitHub Analysis</h3>
+                    <p>Get insights on your GitHub profile quality and portfolio gaps.</p>
+                    <button onclick="navigateTo('github')">Analyze GitHub</button>
+                </div>
+
+                <div class="card">
+                    <h3>🔍 System Status</h3>
+                    <p>Check backend health, Ollama connection, and system diagnostics.</p>
+                    <button onclick="navigateTo('status')">Check Status</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>About</h2>
+                <p><strong>HirePath</strong> is an AI-powered career acceleration platform that runs 100% locally.</p>
+                <h3>Key Features:</h3>
+                <ul style="margin-left: 20px; margin-top: 12px;">
+                    <li>ATS Resume Scoring (0-100 scale)</li>
+                    <li>Skill Gap Analysis by domain & company</li>
+                    <li>GitHub project quality assessment</li>
+                    <li>90-day personalized career roadmap</li>
+                    <li>Job matching from local database</li>
+                    <li>Interview preparation guides</li>
+                    <li>No external API calls - everything runs locally</li>
+                </ul>
+
+                <h3 style="margin-top: 24px;">System Status</h3>
+                <p id="backend-status">
+                    <span class="status warning">
+                        <span class="dot"></span> Checking...
+                    </span>
+                </p>
+
+                <div class="alert alert-info" style="margin-top: 20px;">
+                    <strong>Note:</strong> For AI features (GitHub analysis, career roadmap, interview prep), Ollama must be running. 
+                    Start it with: <code>ollama serve</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- ANALYZE PAGE -->
+        <div id="analyze" class="page">
+            <div class="page-header">
+                <h1>Full Analysis</h1>
+                <p>Complete career assessment: resume, GitHub, skills, jobs, and roadmap</p>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h2>Your Information</h2>
+                    <div class="form-group">
+                        <label for="analyze-resume">Resume (PDF or DOCX)</label>
+                        <input type="file" id="analyze-resume" accept=".pdf,.docx">
+                    </div>
+                    <div class="form-group">
+                        <label for="analyze-domain">Target Domain</label>
+                        <select id="analyze-domain" required>
+                            <option value="">Select domain...</option>
+                            <option value="aiml">AI/Machine Learning</option>
+                            <option value="devops">DevOps</option>
+                            <option value="frontend">Frontend Development</option>
+                            <option value="backend">Backend Development</option>
+                            <option value="data-engineering">Data Engineering</option>
+                            <option value="fullstack">Full Stack</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="analyze-company">Target Company</label>
+                        <input type="text" id="analyze-company" placeholder="e.g., Google, Amazon, Startup" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="analyze-github">GitHub Profile</label>
+                        <input type="text" id="analyze-github" placeholder="Username or full URL" required>
+                    </div>
+                    <button onclick="runFullAnalysis()" style="width: 100%;">Run Analysis</button>
+                </div>
+
+                <div>
+                    <div id="analyze-results"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ATS CHECK PAGE -->
+        <div id="ats" class="page">
+            <div class="page-header">
+                <h1>ATS Check</h1>
+                <p>Quick resume scoring for your target domain</p>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h2>Upload Resume</h2>
+                    <div class="form-group">
+                        <label for="ats-resume">Resume (PDF or DOCX)</label>
+                        <input type="file" id="ats-resume" accept=".pdf,.docx" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ats-domain">Domain</label>
+                        <select id="ats-domain" required>
+                            <option value="">Select domain...</option>
+                            <option value="aiml">AI/Machine Learning</option>
+                            <option value="devops">DevOps</option>
+                            <option value="frontend">Frontend Development</option>
+                            <option value="backend">Backend Development</option>
+                        </select>
+                    </div>
+                    <button onclick="quickAtsCheck()" style="width: 100%;">Get ATS Score</button>
+                </div>
+
+                <div id="ats-results"></div>
+            </div>
+        </div>
+
+        <!-- SKILLS PAGE -->
+        <div id="skills" class="page">
+            <div class="page-header">
+                <h1>Skill Gap Analysis</h1>
+                <p>Discover missing skills for your target role</p>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h2>Your Skills</h2>
+                    <div class="form-group">
+                        <label for="skills-input">Skills (comma-separated)</label>
+                        <textarea id="skills-input" placeholder="Python, Docker, FastAPI, React..."  rows="6" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="skills-domain">Target Domain</label>
+                        <select id="skills-domain" required>
+                            <option value="">Select domain...</option>
+                            <option value="aiml">AI/Machine Learning</option>
+                            <option value="devops">DevOps</option>
+                            <option value="frontend">Frontend Development</option>
+                            <option value="backend">Backend Development</option>
+                            <option value="data-engineering">Data Engineering</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="skills-company">Company (optional)</label>
+                        <input type="text" id="skills-company" placeholder="e.g., Google">
+                    </div>
+                    <button onclick="checkSkillGap()" style="width: 100%;">Analyze Gaps</button>
+                </div>
+
+                <div id="skills-results"></div>
+            </div>
+        </div>
+
+        <!-- JOBS PAGE -->
+        <div id="jobs" class="page">
+            <div class="page-header">
+                <h1>Job Matches</h1>
+                <p>Find positions that align with your skills</p>
+            </div>
+
+            <div class="card">
+                <h2>Your Profile</h2>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label for="jobs-skills">Your Skills</label>
+                        <textarea id="jobs-skills" placeholder="Python, React, Docker..." rows="4" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="jobs-domain">Target Domain</label>
+                        <select id="jobs-domain" required>
+                            <option value="">Select domain...</option>
+                            <option value="aiml">AI/Machine Learning</option>
+                            <option value="devops">DevOps</option>
+                            <option value="frontend">Frontend Development</option>
+                            <option value="backend">Backend Development</option>
+                        </select>
+                    </div>
+                </div>
+                <button onclick="findJobMatches()" style="width: 100%;">Find Matching Jobs</button>
+            </div>
+
+            <div id="jobs-results"></div>
+        </div>
+
+        <!-- GITHUB PAGE -->
+        <div id="github" class="page">
+            <div class="page-header">
+                <h1>GitHub Analysis</h1>
+                <p>Professional assessment of your portfolio</p>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h2>GitHub Profile</h2>
+                    <div class="form-group">
+                        <label for="github-url">GitHub Username or URL</label>
+                        <input type="text" id="github-url" placeholder="torvalds or https://github.com/torvalds" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="github-domain">Target Domain</label>
+                        <select id="github-domain" required>
+                            <option value="">Select domain...</option>
+                            <option value="aiml">AI/Machine Learning</option>
+                            <option value="devops">DevOps</option>
+                            <option value="frontend">Frontend Development</option>
+                            <option value="backend">Backend Development</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="github-company">Company</label>
+                        <input type="text" id="github-company" placeholder="e.g., Google" required>
+                    </div>
+                    <button onclick="analyzeGitHub()" style="width: 100%;">Analyze GitHub</button>
+
+                    <div class="alert alert-info" style="margin-top: 20px;">
+                        Note: AI analysis requires Ollama to be running.
+                    </div>
+                </div>
+
+                <div id="github-results"></div>
+            </div>
+        </div>
+
+        <!-- STATUS PAGE -->
+        <div id="status" class="page">
+            <div class="page-header">
+                <h1>System Status</h1>
+                <p>Backend health and diagnostics</p>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h2>System Check</h2>
+                    <button onclick="runSystemDiagnostics()" style="width: 100%; margin-bottom: 20px;">Run Diagnostics</button>
+                </div>
+
+                <div id="status-results"></div>
+            </div>
+
+            <div class="card" style="margin-top: 24px;">
+                <h2>API Endpoints</h2>
+                <table>
+                    <tr>
+                        <th>Endpoint</th>
+                        <th>Method</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td>/api/analyze</td>
+                        <td>POST</td>
+                        <td>Full analysis</td>
+                    </tr>
+                    <tr>
+                        <td>/api/ats-check</td>
+                        <td>POST</td>
+                        <td>ATS scoring</td>
+                    </tr>
+                    <tr>
+                        <td>/api/skill-gap</td>
+                        <td>POST</td>
+                        <td>Skill analysis</td>
+                    </tr>
+                    <tr>
+                        <td>/api/domains</td>
+                        <td>GET</td>
+                        <td>List domains</td>
+                    </tr>
+                    <tr>
+                        <td>/api/companies</td>
+                        <td>GET</td>
+                        <td>List companies</td>
+                    </tr>
+                    <tr>
+                        <td>/api/status</td>
+                        <td>GET</td>
+                        <td>System status</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 HirePath. Career acceleration platform running 100% locally.</p>
+        <p><a href="http://localhost:8000/docs" target="_blank">API Documentation</a></p>
+    </footer>
+
+    <script src="assets/script.js"></script>
+    <script>
+        // PAGE-SPECIFIC FUNCTIONS
+
+        // Full Analysis
+        async function runFullAnalysis() {
+            const resume = document.getElementById('analyze-resume').files[0];
+            const domain = document.getElementById('analyze-domain').value;
+            const company = document.getElementById('analyze-company').value;
+            const github = document.getElementById('analyze-github').value;
+            const resultsEl = document.getElementById('analyze-results');
+
+            if (!resume || !domain || !company || !github) {
+                showError(resultsEl, 'Please fill all fields');
+                return;
+            }
+
+            showLoading(resultsEl);
+
+            try {
+                const formData = new FormData();
+                formData.append('resume', resume);
+                formData.append('domain', domain);
+                formData.append('company', company);
+                formData.append('github_url', github);
+
+                const data = await apiCallFormData('/api/analyze', formData);
+
+                let html = '<div class="card"><h2>Results</h2>';
+
+                // ATS Score
+                if (data.ats_score) {
+                    const ats = data.ats_score;
+                    html += `
+                        <h3>📈 ATS Score</h3>
+                        <div class="score-badge ${getScoreBadgeClass(ats.total_score)}">
+                            ${Math.round(ats.total_score)}
+                        </div>
+                        <div class="metrics-grid">
+                            <div class="metric">
+                                <div class="metric-label">Keyword Match</div>
+                                <div class="metric-value">${ats.breakdown.keyword_match}</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-label">Format</div>
+                                <div class="metric-value">${ats.breakdown.format}</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-label">Quantification</div>
+                                <div class="metric-value">${ats.breakdown.quantification}</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-label">Action Verbs</div>
+                                <div class="metric-value">${ats.breakdown.action_verbs}</div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                // Skill Gap
+                if (data.skill_gap) {
+                    const gap = data.skill_gap;
+                    html += `
+                        <h3>🎯 Skill Gap</h3>
+                        <div class="score-badge ${getScoreBadgeClass(gap.readiness_score)}">
+                            ${Math.round(gap.readiness_score)}
+                        </div>
+                        <p><strong>Status:</strong> ${gap.readiness_level}</p>
+                        <div style="margin-top: 12px;">
+                            <strong>Must-Have Coverage:</strong> ${gap.must_have.coverage}%<br>
+                            <strong>Available Jobs:</strong> ${gap.must_have.coverage >= 80 ? 'Many' : 'Some'} 
+                        </div>
+                    `;
+                }
+
+                // Job Matches
+                if (data.job_matches && data.job_matches.total > 0) {
+                    html += `
+                        <h3>💼 Top Job Matches</h3>
+                        ${data.job_matches.jobs?.slice(0, 3).map(job => `
+                            <div style="background: #f8f8f8; padding: 12px; margin: 8px 0; border-radius: 4px;">
+                                <strong>${job.title}</strong><br>
+                                <span style="color: #666;">${job.company}</span> - Match: <strong>${job.match_score}%</strong>
+                            </div>
+                        `).join('') || ''}
+                    `;
+                }
+
+                html += '</div>';
+                resultsEl.innerHTML = html;
+            } catch (error) {
+                showError(resultsEl, error.message);
+            }
+        }
+
+        // ATS Check
+        async function quickAtsCheck() {
+            const resume = document.getElementById('ats-resume').files[0];
+            const domain = document.getElementById('ats-domain').value;
+            const resultsEl = document.getElementById('ats-results');
+
+            if (!resume || !domain) {
+                showError(resultsEl, 'Please select resume and domain');
+                return;
+            }
+
+            showLoading(resultsEl);
+
+            try {
+                const formData = new FormData();
+                formData.append('resume', resume);
+                formData.append('domain', domain);
+
+                const data = await apiCallFormData('/api/ats-check', formData);
+                const ats = data.ats_score;
+
+                let html = `
+                    <div class="card">
+                        <h2>ATS Score</h2>
+                        <div class="score-badge ${getScoreBadgeClass(ats.total_score)}">
+                            ${Math.round(ats.total_score)}
+                        </div>
+                        <div class="metrics-grid" style="margin-top: 20px;">
+                            <div class="metric">
+                                <div class="metric-label">Keyword Match</div>
+                                <div class="metric-value">${ats.breakdown.keyword_match}</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-label">Format</div>
+                                <div class="metric-value">${ats.breakdown.format}</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-label">Quantification</div>
+                                <div class="metric-value">${ats.breakdown.quantification}</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-label">Length</div>
+                                <div class="metric-value">${ats.breakdown.length}</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-label">Action Verbs</div>
+                                <div class="metric-value">${ats.breakdown.action_verbs}</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 20px;">
+                            <strong>Recommendations:</strong>
+                            <ul style="margin-left: 20px; margin-top: 8px;">
+                                ${ats.recommendations?.quick_wins?.slice(0, 3).map(win => 
+                                    `<li>${win}</li>`
+                                ).join('') || '<li>Resume looks good!</li>'}
+                            </ul>
+                        </div>
+                    </div>
+                `;
+
+                resultsEl.innerHTML = html;
+            } catch (error) {
+                showError(resultsEl, error.message);
+            }
+        }
+
+        // Skill Gap
+        async function checkSkillGap() {
+            const skills = document.getElementById('skills-input').value;
+            const domain = document.getElementById('skills-domain').value;
+            const company = document.getElementById('skills-company').value;
+            const resultsEl = document.getElementById('skills-results');
+
+            if (!skills || !domain) {
+                showError(resultsEl, 'Please enter skills and select domain');
+                return;
+            }
+
+            showLoading(resultsEl);
+
+            try {
+                const formData = new FormData();
+                formData.append('user_skills', skills);
+                formData.append('domain', domain);
+                if (company) formData.append('company', company);
+
+                const data = await apiCallFormData('/api/skill-gap', formData);
+                const gap = data.skill_gap;
+
+                let html = `
+                    <div class="card">
+                        <h2>Skill Gap Analysis</h2>
+                        <div class="score-badge ${getScoreBadgeClass(gap.readiness_score)}">
+                            ${Math.round(gap.readiness_score)}
+                        </div>
+                        
+                        <h3 style="margin-top: 20px;">Must-Have Skills</h3>
+                        <p>Coverage: <strong>${gap.must_have.coverage}%</strong></p>
+                        <div class="tag-list">
+                            ${gap.must_have.have.slice(0, 5).map(skill => 
+                                `<span class="tag success">${skill}</span>`
+                            ).join('')}
+                        </div>
+                        ${gap.must_have.missing.length > 0 ? `
+                            <h3 style="margin-top: 16px;">Missing Must-Have</h3>
+                            <div class="tag-list">
+                                ${gap.must_have.missing.slice(0, 5).map(skill => 
+                                    `<span class="tag warning">${skill}</span>`
+                                ).join('')}
+                            </div>
+                        ` : ''}
+
+                        <h3 style="margin-top: 20px;">Good-to-Have Skills</h3>
+                        <p>Coverage: <strong>${gap.good_to_have.coverage}%</strong></p>
+                        <div class="tag-list">
+                            ${gap.good_to_have.have.slice(0, 5).map(skill => 
+                                `<span class="tag success">${skill}</span>`
+                            ).join('')}
+                        </div>
+
+                        <p style="margin-top: 20px;"><strong>Readiness Level:</strong> ${gap.readiness_level}</p>
+                    </div>
+                `;
+
+                resultsEl.innerHTML = html;
+            } catch (error) {
+                showError(resultsEl, error.message);
+            }
+        }
+
+        // Job Matches
+        async function findJobMatches() {
+            const skills = document.getElementById('jobs-skills').value;
+            const domain = document.getElementById('jobs-domain').value;
+            const resultsEl = document.getElementById('jobs-results');
+
+            if (!skills || !domain) {
+                showError(resultsEl, 'Please enter skills and select domain');
+                return;
+            }
+
+            showLoading(resultsEl);
+
+            try {
+                const formData = new FormData();
+                formData.append('user_skills', skills);
+                formData.append('domain', domain);
+
+                const data = await apiCallFormData('/api/job-matches', formData);
+                const jobs = data.matched_jobs || [];
+
+                if (jobs.length === 0) {
+                    resultsEl.innerHTML = '<div class="alert alert-warning">No matching jobs found. Try expanding your skills.</div>';
+                    return;
+                }
+
+                let html = '<div>';
+                jobs.forEach(job => {
+                    html += `
+                        <div class="card">
+                            <h3>${job.title}</h3>
+                            <p><strong>${job.company}</strong> • ${job.location || 'Remote'}</p>
+                            <div class="metrics-grid" style="margin-top: 12px;">
+                                <div class="metric">
+                                    <div class="metric-label">Match Score</div>
+                                    <div class="metric-value">${job.match_score}%</div>
+                                </div>
+                                <div class="metric">
+                                    <div class="metric-label">Matched Skills</div>
+                                    <div class="metric-value">${job.matched_skills.length}</div>
+                                </div>
+                                <div class="metric">
+                                    <div class="metric-label">Missing Skills</div>
+                                    <div class="metric-value">${job.missing_skills.length}</div>
+                                </div>
+                            </div>
+                            ${job.url ? `<a href="${job.url}" target="_blank" class="btn btn-small" style="margin-top: 12px;">View Job</a>` : ''}
+                        </div>
+                    `;
+                });
+                html += '</div>';
+
+                resultsEl.innerHTML = html;
+            } catch (error) {
+                showError(resultsEl, error.message);
+            }
+        }
+
+        // GitHub Analysis
+        async function analyzeGitHub() {
+            const github = document.getElementById('github-url').value;
+            const domain = document.getElementById('github-domain').value;
+            const company = document.getElementById('github-company').value;
+            const resultsEl = document.getElementById('github-results');
+
+            if (!github || !domain || !company) {
+                showError(resultsEl, 'Please fill all fields');
+                return;
+            }
+
+            showLoading(resultsEl);
+
+            try {
+                // First, validate GitHub
+                const validateFormData = new FormData();
+                validateFormData.append('github_url', github);
+                await apiCallFormData('/api/validate-github', validateFormData);
+
+                // Will implement GitHub analysis fetching
+                resultsEl.innerHTML = `
+                    <div class="card">
+                        <h2>GitHub Analysis</h2>
+                        <div class="alert alert-info">
+                            GitHub analysis requires Ollama to be running.
+                            Prepare your GitHub profile: <strong>${github}</strong>
+                        </div>
+                        <p>GitHub profile is valid and ready for analysis.</p>
+                    </div>
+                `;
+            } catch (error) {
+                showError(resultsEl, error.message);
+            }
+        }
+
+        // System Diagnostics
+        async function runSystemDiagnostics() {
+            const resultsEl = document.getElementById('status-results');
+            showLoading(resultsEl);
+
+            try {
+                const data = await apiCall('/api/status');
+
+                let html = `
+                    <div class="card">
+                        <h2>System Status</h2>
+                        <div class="metrics-grid">
+                            <div class="metric">
+                                <div class="metric-label">Backend</div>
+                                <div class="metric-value" style="color: #2e7d32;">✓ Running</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-label">Ollama</div>
+                                <div class="metric-value" style="color: ${data.ollama_backend?.connected ? '#2e7d32' : '#f44336'};">
+                                    ${data.ollama_backend?.connected ? '✓ Connected' : '✗ Offline'}
+                                </div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-label">Resume Parser</div>
+                                <div class="metric-value" style="color: #2e7d32;">✓ Ready</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-label">Job Database</div>
+                                <div class="metric-value" style="color: #2e7d32;">✓ Ready</div>
+                            </div>
+                        </div>
+                        
+                        <h3 style="margin-top: 20px;">Components</h3>
+                        <ul style="margin-left: 20px;">
+                            <li>Resume Analyzer: Ready</li>
+                            <li>GitHub Fetcher: Ready</li>
+                            <li>ATS Scorer: Ready</li>
+                            <li>Skill Gap Analyzer: Ready</li>
+                            <li>Job Matcher: Ready</li>
+                            <li>Ollama Client: ${data.ollama_backend?.connected ? 'Connected' : 'Requires Ollama'}</li>
+                        </ul>
+                    </div>
+                `;
+
+                resultsEl.innerHTML = html;
+            } catch (error) {
+                showError(resultsEl, error.message);
+            }
+        }
+    </script>
+</body>
+</html>

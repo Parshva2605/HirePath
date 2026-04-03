@@ -1,0 +1,64 @@
+{
+  "required_skills": {
+    "must_have": [
+      "React",
+      "JavaScript or TypeScript",
+      "CSS",
+      "HTML",
+      "Responsive Design",
+      "Component Architecture",
+      "State Management",
+      "Web Performance"
+    ],
+    "good_to_have": [
+      "Next.js",
+      "Tailwind CSS",
+      "GraphQL",
+      "REST APIs",
+      "Testing (Jest, React Testing Library)",
+      "Accessibility (WCAG)",
+      "Browser DevTools",
+      "Git",
+      "npm/yarn",
+      "Build tools (Webpack, Vite)"
+    ],
+    "advanced": [
+      "Advanced React patterns (Render props, HOC, Custom hooks)",
+      "Server-side rendering",
+      "Static site generation",
+      "Progressive Web Apps (PWA)",
+      "Web Workers",
+      "Error Boundary patterns",
+      "Package optimization",
+      "Internationalization (i18n)"
+    ]
+  },
+  "projects_expected": [
+    "Responsive multi-page website",
+    "Interactive React application",
+    "Full-stack project with backend integration",
+    "Performance-optimized frontend",
+    "Accessible UI components",
+    "GitHub portfolio with README"
+  ],
+  "certifications_valued": [
+    "Meta React Developer Certification",
+    "Google Front-End Web Development",
+    "Scrimba React Course",
+    "Frontend Masters courses"
+  ],
+  "common_interview_topics": [
+    "React fundamentals & hooks",
+    "State management solutions",
+    "Component lifecycle",
+    "Performance optimization",
+    "CSS layout & positioning",
+    "Responsive design principles",
+    "API integration",
+    "Error handling",
+    "Testing strategies",
+    "Accessibility compliance",
+    "Security best practices",
+    "Browser compatibility"
+  ]
+}

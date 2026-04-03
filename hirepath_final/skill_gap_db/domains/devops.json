@@ -1,0 +1,63 @@
+{
+  "required_skills": {
+    "must_have": [
+      "Kubernetes",
+      "Docker",
+      "Linux",
+      "CI/CD",
+      "Infrastructure as Code",
+      "Monitoring & Logging",
+      "Bash Shell Scripting",
+      "Cloud Platform (AWS/Azure/GCP)"
+    ],
+    "good_to_have": [
+      "Terraform",
+      "Ansible",
+      "Jenkins",
+      "GitLab CI",
+      "GitHub Actions",
+      "Prometheus",
+      "Grafana",
+      "ELK Stack",
+      "Networking",
+      "Security & Compliance"
+    ],
+    "advanced": [
+      "Custom Kubernetes Operators",
+      "Service Mesh (Istio, Linkerd)",
+      "Helm Charts Optimization",
+      "Cost Optimization",
+      "Multi-cloud strategies",
+      "Chaos Engineering",
+      "AIOps",
+      "eBPF Monitoring"
+    ]
+  },
+  "projects_expected": [
+    "Containerized application with Docker",
+    "Kubernetes deployment and management",
+    "CI/CD pipeline from scratch",
+    "Infrastructure as Code (Terraform) project",
+    "Monitoring & alerting setup",
+    "Disaster recovery & backup system"
+  ],
+  "certifications_valued": [
+    "Certified Kubernetes Administrator (CKA)",
+    "AWS Solutions Architect Associate",
+    "HashiCorp Certified: Terraform Associate",
+    "AWS Developer Associate",
+    "Linux Foundation LFCS"
+  ],
+  "common_interview_topics": [
+    "Container orchestration strategies",
+    "Kubernetes architecture & components",
+    "Network policies & security",
+    "Storage & stateful applications",
+    "CI/CD pipeline design",
+    "Infrastructure as Code best practices",
+    "Monitoring, logging, and alerting",
+    "Troubleshooting common issues",
+    "Cost optimization strategies",
+    "Disaster recovery & business continuity"
+  ]
+}

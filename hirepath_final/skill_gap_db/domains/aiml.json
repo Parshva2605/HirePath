@@ -1,0 +1,64 @@
+{
+  "required_skills": {
+    "must_have": [
+      "Python",
+      "Machine Learning",
+      "Deep Learning",
+      "PyTorch or TensorFlow",
+      "scikit-learn",
+      "pandas",
+      "NumPy",
+      "Data Analysis",
+      "Problem Solving"
+    ],
+    "good_to_have": [
+      "MLOps",
+      "Docker",
+      "Kubernetes",
+      "Spark",
+      "Airflow",
+      "SQL",
+      "Data Engineering",
+      "Model Deployment",
+      "AWS or GCP",
+      "Natural Language Processing",
+      "Computer Vision"
+    ],
+    "advanced": [
+      "Custom CUDA kernels",
+      "Distributed training",
+      "RLHF (Reinforcement Learning from Human Feedback)",
+      "RAG (Retrieval-Augmented Generation)",
+      "JAX",
+      "Hugging Face Transformers",
+      "Research Paper Implementation",
+      "Model Fine-tuning"
+    ]
+  },
+  "projects_expected": [
+    "End-to-end ML project with deployment",
+    "NLP project (classification, generation, or summarization)",
+    "Computer vision project",
+    "Kaggle competition participation",
+    "GitHub project with documentation"
+  ],
+  "certifications_valued": [
+    "AWS ML Specialty",
+    "TensorFlow Developer Certificate",
+    "DeepLearning.AI courses",
+    "Fast.ai Practical Deep Learning",
+    "Andrew Ng Machine Learning Specialization"
+  ],
+  "common_interview_topics": [
+    "Linear Regression & Logistic Regression",
+    "Tree-based models (Decision Trees, Random Forest, XGBoost)",
+    "Neural Networks & Backpropagation",
+    "Convolutional Neural Networks",
+    "Recurrent Neural Networks & LSTMs",
+    "Attention Mechanism & Transformers",
+    "Evaluation metrics (accuracy, precision, recall, F1)",
+    "Overfitting, regularization, cross-validation",
+    "Feature Engineering",
+    "Model selection & hyperparameter tuning"
+  ]
+}

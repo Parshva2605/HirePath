@@ -1,0 +1,64 @@
+{
+  "required_skills": {
+    "must_have": [
+      "Python or Node.js or Java",
+      "API Design (REST or GraphQL)",
+      "Database Design (SQL or NoSQL)",
+      "Authentication & Authorization",
+      "Problem Solving & Algorithms",
+      "System Design"
+    ],
+    "good_to_have": [
+      "Django or FastAPI or Express or Spring",
+      "PostgreSQL or MongoDB",
+      "Redis",
+      "Docker",
+      "Microservices",
+      "Message Queues (Kafka, RabbitMQ)",
+      "Git",
+      "AWS or GCP",
+      "Testing frameworks",
+      "API documentation"
+    ],
+    "advanced": [
+      "Distributed systems design",
+      "Event-driven architecture",
+      "CQRS pattern",
+      "Event sourcing",
+      "Saga pattern",
+      "Database optimization & indexing",
+      "Caching strategies",
+      "Load balancing",
+      "Rate limiting & throttling"
+    ]
+  },
+  "projects_expected": [
+    "RESTful API with database",
+    "Full-stack web application",
+    "Microservices architecture",
+    "Real-time feature (WebSocket/GraphQL)",
+    "Authentication system",
+    "Performance-optimized backend",
+    "Well-documented API"
+  ],
+  "certifications_valued": [
+    "AWS Solutions Architect Associate",
+    "Google Cloud Certified Associate",
+    "Linux Foundation courses",
+    "Backend Masters specialization"
+  ],
+  "common_interview_topics": [
+    "HTTP methods & status codes",
+    "Database design & normalization",
+    "Query optimization",
+    "Caching strategies",
+    "Authentication (JWT, OAuth)",
+    "Error handling & logging",
+    "Rate limiting & throttling",
+    "API versioning",
+    "Pagination & filtering",
+    "Transactions & ACID properties",
+    "Architectural patterns",
+    "Scalability challenges"
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "company": "Microsoft",
+  "domains_hiring": ["backend", "frontend", "cloud", "aiml", "devops"],
+  "specific_requirements": {
+    "backend": {
+      "extra_skills": ["C#", ".NET", "Azure", "SQL Server at scale"],
+      "bar": "Strong architecture thinking, enterprise patterns, collaboration",
+      "portfolio_bar": "Large-scale backend system or significant open source contribution",
+      "interview_format": "Phone screening → 2 technical rounds → design round → on-site"
+    },
+    "cloud": {
+      "extra_skills": ["Azure ecosystem", "Hybrid cloud", "Enterprise solutions"],
+      "bar": "Cloud architecture depth, enterprise mindset",
+      "portfolio_bar": "Multi-service Azure deployment, enterprise-grade solution",
+      "interview_format": "Technical assessment → architecture discussion → team interviews"
+    }
+  },
+  "interview_focus": ["DSA", "System Design", "Cloud Concepts", "Soft Skills", "Fit"],
+  "resume_requirements": "Impact orientation, team collaboration examples, product thinking",
+  "hiring_philosophy": "Look for curiosity, collaboration, growth mindset",
+  "compensation_expectations": "Very competitive, strong benefits, stock options",
+  "career_path": "Learning culture, diverse roles available, mentorship programs",
+  "unique_aspects": "Strong focus on diversity and inclusion, learning stipend"
+}

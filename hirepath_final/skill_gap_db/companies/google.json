@@ -1,0 +1,29 @@
+{
+  "company": "Google",
+  "domains_hiring": ["aiml", "backend", "frontend", "devops", "data-engineering"],
+  "specific_requirements": {
+    "aiml": {
+      "extra_skills": ["JAX", "Vertex AI", "TensorFlow", "Large-scale distributed training", "Research publication"],
+      "bar": "Strong CS fundamentals, LeetCode hard problems, system design, ML theory",
+      "portfolio_bar": "Published papers OR impressive open source contributions OR top Kaggle ranking",
+      "interview_format": "Phone screening → 3-4 technical rounds → on-site"
+    },
+    "backend": {
+      "extra_skills": ["Microservices at scale", "Protocol Buffers", "Google Cloud", "Data consistency"],
+      "bar": "Strong algorithms, system design, production experience",
+      "portfolio_bar": "Backend system handling millions of requests or complex distributed system",
+      "interview_format": "Phone screening → 2 coding rounds → 1 system design → on-site"
+    },
+    "frontend": {
+      "extra_skills": ["Web performance optimization", "Accessibility expertise", "Large-scale React"],
+      "bar": "Expert-level CSS, React internals, web fundamentals",
+      "portfolio_bar": "High-performance web project, significant UI contribution to open source",
+      "interview_format": "Phone → 2 technical rounds → system design → on-site"
+    }
+  },
+  "interview_focus": ["DSA", "System Design", "ML Theory", "Behavioral", "Googleyness"],
+  "resume_requirements": "Quantified impact, Google-scale numbers preferred, show ownership, metrics-driven",
+  "hiring_philosophy": "Hire for learning potential and fundamental understanding, not just experience",
+  "compensation_expectations": "Highly competitive, includes stock and bonus",
+  "career_path": "IC and management tracks available, rotational programs for newer grads"
+}

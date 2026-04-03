@@ -1,0 +1,24 @@
+{
+  "company": "Amazon",
+  "domains_hiring": ["backend", "frontend", "devops", "aiml", "data-engineering"],
+  "specific_requirements": {
+    "backend": {
+      "extra_skills": ["Java", "Distributed systems", "AWS", "High availability"],
+      "bar": "Strong fundamentals, scalability thinking, operational excellence",
+      "portfolio_bar": "Backend system supporting high throughput or complex business logic",
+      "interview_format": "Phone screening → 2 coding → 1 system design → on-site interviews"
+    },
+    "devops": {
+      "extra_skills": ["AWS expertise", "Infrastructure at scale", "Cost optimization"],
+      "bar": "Production infrastructure experience, automation mindset",
+      "portfolio_bar": "Multi-region infrastructure, automated deployment pipeline",
+      "interview_format": "Technical phone → infrastructure design → 2 behavioral on-site"
+    }
+  },
+  "interview_focus": ["Leadership Principles", "DSA", "System Design", "Behavioral", "Ownership"],
+  "resume_requirements": "Leadership principles alignment, ownership examples, metrics and impact",
+  "hiring_philosophy": "Deep diver, bias for action, customer focus, frugality mindset",
+  "compensation_expectations": "Competitive, large signing bonus for senior levels",
+  "career_path": "Strong internal mobility, leadership development programs",
+  "knowledge_base": "Emphasis on AWS knowledge and 'Well-Architected Framework'"
+}

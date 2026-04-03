@@ -1,0 +1,131 @@
+[
+  {
+    "id": "job_001",
+    "title": "Senior Machine Learning Engineer",
+    "company": "TechCorp AI",
+    "domain": "aiml",
+    "location": "San Francisco, CA",
+    "employment_type": "Full-time",
+    "salary_range": "$180,000 - $250,000",
+    "description": "We're looking for a Senior Machine Learning Engineer to lead our AI initiatives. You'll work on large-scale ML systems, including model training, deployment, and optimization. Experience with transformer models and NLP is preferred.",
+    "required_skills": [
+      "Python",
+      "Machine Learning",
+      "Deep Learning",
+      "TensorFlow",
+      "PyTorch",
+      "Distributed Systems",
+      "AWS"
+    ],
+    "nice_to_have": [
+      "JAX",
+      "Hugging Face",
+      "RLHF",
+      "Publishing research"
+    ],
+    "url": "https://example.com/jobs/job_001"
+  },
+  {
+    "id": "job_002",
+    "title": "DevOps Engineer",
+    "company": "CloudSystems Inc",
+    "domain": "devops",
+    "location": "New York, NY",
+    "employment_type": "Full-time",
+    "salary_range": "$150,000 - $200,000",
+    "description": "Join our infrastructure team! We're seeking a DevOps Engineer with strong Kubernetes and Docker expertise to manage our cloud infrastructure. You'll work on CI/CD pipelines, infrastructure automation, and monitoring solutions.",
+    "required_skills": [
+      "Kubernetes",
+      "Docker",
+      "Linux",
+      "Terraform",
+      "CI/CD",
+      "AWS or Azure",
+      "Bash"
+    ],
+    "nice_to_have": [
+      "Prometheus",
+      "Grafana",
+      "Ansible",
+      "Helm"
+    ],
+    "url": "https://example.com/jobs/job_002"
+  },
+  {
+    "id": "job_003",
+    "title": "Senior Frontend Developer",
+    "company": "WebScale Inc",
+    "domain": "frontend",
+    "location": "Austin, TX",
+    "employment_type": "Full-time",
+    "salary_range": "$140,000 - $190,000",
+    "description": "We're building the next generation of web applications. We need a Senior Frontend Developer with expert-level React and TypeScript skills. You'll mentor team members and drive architectural decisions.",
+    "required_skills": [
+      "React",
+      "TypeScript",
+      "JavaScript",
+      "CSS",
+      "HTML",
+      "State Management",
+      "Web Performance"
+    ],
+    "nice_to_have": [
+      "Next.js",
+      "Tailwind CSS",
+      "Testing",
+      "Accessibility"
+    ],
+    "url": "https://example.com/jobs/job_003"
+  },
+  {
+    "id": "job_004",
+    "title": "Backend Software Engineer",
+    "company": "DataFlow Systems",
+    "domain": "backend",
+    "location": "Seattle, WA",
+    "employment_type": "Full-time",
+    "salary_range": "$160,000 - $220,000",
+    "description": "Help us build scalable backend systems processing millions of requests daily. Looking for an engineer with strong API design, database optimization, and microservices expertise.",
+    "required_skills": [
+      "Python or Node.js",
+      "API Design",
+      "Database Design",
+      "SQL",
+      "Microservices",
+      "System Design",
+      "Docker"
+    ],
+    "nice_to_have": [
+      "GraphQL",
+      "Redis",
+      "Kafka",
+      "Message Queues"
+    ],
+    "url": "https://example.com/jobs/job_004"
+  },
+  {
+    "id": "job_005",
+    "title": "Full-Stack Engineer",
+    "company": "StartupXYZ",
+    "domain": "fullstack",
+    "location": "Remote",
+    "employment_type": "Full-time",
+    "salary_range": "$120,000 - $160,000 + equity",
+    "description": "Join our lean team at a fast-growing startup! We need a Full-Stack Engineer who can wear multiple hats, shipping features quickly from frontend to backend.",
+    "required_skills": [
+      "React",
+      "Node.js or Python",
+      "Database Design",
+      "API Development",
+      "Git",
+      "Problem Solving"
+    ],
+    "nice_to_have": [
+      "Next.js",
+      "PostgreSQL",
+      "Docker",
+      "DevOps basics"
+    ],
+    "url": "https://example.com/jobs/job_005"
+  }
+]

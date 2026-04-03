@@ -1,0 +1,25 @@
+{
+  "company": "Startup",
+  "domains_hiring": ["backend", "frontend", "fullstack", "devops"],
+  "specific_requirements": {
+    "backend": {
+      "extra_skills": ["Rapid prototyping", "MVP thinking", "Cost-conscious architecture"],
+      "bar": "Ship fast mindset, problem solving, adaptability",
+      "portfolio_bar": "Full product delivery, ability to work across stack",
+      "interview_format": "Technical chat → take-home project → team interview"
+    },
+    "frontend": {
+      "extra_skills": ["Quick prototyping", "Design collaboration", "Mobile-responsive"],
+      "bar": "Rapid feature shipping, user-centric thinking",
+      "portfolio_bar": "Complete product shipping, user feedback incorporation",
+      "interview_format": "Technical discussion → design task → culture fit"
+    }
+  },
+  "interview_focus": ["Practical Skills", "Problem Solving", "Culture Fit", "Growth Mindset", "Ownership"],
+  "resume_requirements": "Shipped product examples, entrepreneurial spirit, concrete impact metrics",
+  "hiring_philosophy": "Pragmatism over perfection, T-shaped generalists, passionate about problem",
+  "compensation_expectations": "Lower salary but equity upside, learning opportunities unlimited",
+  "career_path": "Rapid growth, varied responsibilities, leadership opportunities",
+  "unique_aspects": "More responsive to candidates, flexible skill requirements, impact immediately",
+  "red_flags": "Unclear product-market fit, founder conflict, poor communication"
+}
