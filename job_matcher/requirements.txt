@@ -1,7 +1,0 @@
-# Job Matcher Standalone Module - Python Dependencies
-
-# HTTP requests for fetching job listings
-requests>=2.31.0
-
-# Optional: For better skill extraction (not required for basic functionality)
-# scikit-learn>=1.3.0  # Uncomment if you want TF-IDF based matching
