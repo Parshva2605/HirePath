@@ -18,7 +18,7 @@ Single-page Next.js dashboard for the HirePath workflow.
 1. Install dependencies:
 
 ```bash
-cd d:\HirePath\hirepath_final\product-dashboard
+cd d:\HirePath\product-dashboard
 npm install
 ```
 
@@ -43,5 +43,16 @@ http://localhost:3000
 ## Notes
 
 - The dashboard calls the local FastAPI backend at `http://localhost:8000` by default.
-- Course links are based on the local skill library sourced from `200_skills_finder.html`.
 - LinkedIn links are generated as search/apply links from the matched job title and company.
+
+## Vercel Deployment
+
+1. Deploy this repository to Vercel.
+2. Set the project Root Directory to `product-dashboard`.
+3. Add environment variable in Vercel:
+
+```bash
+NEXT_PUBLIC_HIREPATH_API=https://your-backend-domain.com
+```
+
+4. Deploy. The frontend will call your hosted backend URL.

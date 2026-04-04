@@ -6,10 +6,3 @@ requests==2.31.0
 spacy==3.7.2
 pydantic==2.5.0
 python-multipart==0.0.6
-
-# Optional LLM Providers (install as needed for your deployment)
-# For local Ollama: no additional packages needed
-# For OpenAI API: pip install openai
-# For Anthropic Claude: pip install anthropic
-# For Groq: pip install groq
-# For Cohere: pip install cohere

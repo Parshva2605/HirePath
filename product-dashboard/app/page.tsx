@@ -361,6 +361,16 @@ export default function Page() {
   const showStopwatch = loading || (!!analysis && analysisSeconds > 0);
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const noticeKey = 'hirepath_cloud_notice_shown';
+    if (window.sessionStorage.getItem(noticeKey)) return;
+
+    window.alert('We are using Ollama Cloud free variants, so it can take more time than local. Please wait 2-3 minutes after clicking Analyze.');
+    window.sessionStorage.setItem(noticeKey, '1');
+  }, []);
+
+  useEffect(() => {
     const fetchStatus = async () => {
       try {
         const response = await fetch(`${API_BASE}/api/status`);
@@ -484,7 +494,7 @@ export default function Page() {
       const response = await fetchWithTimeout(`${API_BASE}/api/analyze`, {
         method: 'POST',
         body: formData
-      }, 90000);
+      }, 240000);
 
       const payload = await response.json();
 
@@ -495,7 +505,9 @@ export default function Page() {
       setAnalysis(payload);
     } catch (caught) {
       const message = caught instanceof Error ? caught.message : 'Unknown error';
-      if (message.includes('Failed to fetch') || message.includes('NetworkError') || message.includes('aborted')) {
+      if (message.includes('aborted')) {
+        setError('Analysis timed out on the frontend before backend finished. The model is running but response took too long. Please retry or use a faster model.');
+      } else if (message.includes('Failed to fetch') || message.includes('NetworkError')) {
         setError(`Cannot connect to backend at ${API_BASE}. Ensure backend is running on port 8000 and refresh once.`);
       } else {
         setError(message);

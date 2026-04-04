@@ -75,11 +75,12 @@ logs/
 *.db
 *.sqlite
 *.sqlite3
-hirepath_final/resume_uploads/
+resume_uploads/
+github_cache/
 
 # -----------------------------
 # Project-specific generated files
 # -----------------------------
-hirepath_final/product-dashboard/.next/
-hirepath_final/product-dashboard/node_modules/
-hirepath_final/product-dashboard/out/
+product-dashboard/.next/
+product-dashboard/node_modules/
+product-dashboard/out/

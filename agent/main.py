@@ -48,6 +48,7 @@ app.add_middleware(
 UPLOAD_FOLDER = Path(__file__).parent.parent / "resume_uploads"
 JOB_FOLDER = Path(__file__).parent.parent / "job_folder"
 SKILL_GAP_DB = Path(__file__).parent.parent / "skill_gap_db"
+FRONTEND_BASE_URL = os.getenv("FRONTEND_BASE_URL", "http://localhost:3000").rstrip("/")
 
 UPLOAD_FOLDER.mkdir(exist_ok=True)
 JOB_FOLDER.mkdir(exist_ok=True)
@@ -231,9 +232,9 @@ async def analyze_profile(
             },
             "interview_preparation": interview_prep,
             "next_steps": {
-                "resume_optimizer_url": "http://localhost:3000/hirepath/optimize",
-                "job_search_tracker": "http://localhost:3000/hirepath/jobs",
-                "skill_tracker": "http://localhost:3000/hirepath/skills"
+                "resume_optimizer_url": f"{FRONTEND_BASE_URL}/hirepath/optimize",
+                "job_search_tracker": f"{FRONTEND_BASE_URL}/hirepath/jobs",
+                "skill_tracker": f"{FRONTEND_BASE_URL}/hirepath/skills"
             },
             "ollama_status": {
                 "connected": check_ollama_connection(),

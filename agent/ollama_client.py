@@ -3,15 +3,25 @@ Ollama client - Local LLM inference for GitHub analysis and career roadmap gener
 """
 
 import json
+import os
 from typing import Dict, Any, Optional
 from urllib.parse import urljoin
 
 import requests
 
 
-OLLAMA_BASE_URL = "http://localhost:11434"
-DEFAULT_MODEL = "llama3"
-TIMEOUT = 60
+OLLAMA_BASE_URL = os.getenv("OLLAMA_ENDPOINT") or os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+DEFAULT_MODEL = os.getenv("OLLAMA_MODEL", "llama3")
+TIMEOUT = int(os.getenv("OLLAMA_TIMEOUT", "60"))
+OLLAMA_API_KEY = os.getenv("OLLAMA_API_KEY", "").strip()
+OLLAMA_AUTH_HEADER = os.getenv("OLLAMA_AUTH_HEADER", "Authorization")
+
+
+def _build_auth_headers() -> Dict[str, str]:
+    """Attach API key auth for cloud endpoints when configured."""
+    if not OLLAMA_API_KEY:
+        return {}
+    return {OLLAMA_AUTH_HEADER: f"Bearer {OLLAMA_API_KEY}"}
 
 
 def _request_chat_completion(
@@ -37,7 +47,8 @@ def _request_chat_completion(
     }
 
     chat_url = urljoin(base_url.rstrip("/") + "/", "api/chat")
-    response = requests.post(chat_url, json=payload, timeout=TIMEOUT)
+    headers = _build_auth_headers()
+    response = requests.post(chat_url, json=payload, headers=headers, timeout=TIMEOUT)
     if response.status_code == 404:
         generate_payload = {
             "model": model,
@@ -50,7 +61,7 @@ def _request_chat_completion(
             }
         }
         generate_url = urljoin(base_url.rstrip("/") + "/", "api/generate")
-        response = requests.post(generate_url, json=generate_payload, timeout=TIMEOUT)
+        response = requests.post(generate_url, json=generate_payload, headers=headers, timeout=TIMEOUT)
 
     response.raise_for_status()
     result = response.json()
@@ -70,7 +81,7 @@ def check_ollama_connection(base_url: str = OLLAMA_BASE_URL) -> bool:
         True if Ollama is running, False otherwise
     """
     try:
-        response = requests.get(f"{base_url}/api/tags", timeout=5)
+        response = requests.get(f"{base_url}/api/tags", headers=_build_auth_headers(), timeout=5)
         return response.status_code == 200
     except Exception as e:
         print(f"Ollama connection failed: {str(e)}")
@@ -88,7 +99,7 @@ def list_available_models(base_url: str = OLLAMA_BASE_URL) -> list:
         List of available model names
     """
     try:
-        response = requests.get(f"{base_url}/api/tags", timeout=5)
+        response = requests.get(f"{base_url}/api/tags", headers=_build_auth_headers(), timeout=5)
         data = response.json()
         models = [m.get("name", "") for m in data.get("models", [])]
         return models
