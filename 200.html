@@ -1,0 +1,323 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);background:transparent}
+.wrap{padding:1rem 0}
+.top{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem;align-items:center}
+.top input{flex:1;min-width:180px;padding:8px 12px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);font-size:14px}
+.top input:focus{outline:none;box-shadow:0 0 0 2px var(--color-border-info)}
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.fbtn{padding:5px 12px;border:0.5px solid var(--color-border-secondary);border-radius:20px;background:var(--color-background-primary);color:var(--color-text-secondary);font-size:12px;cursor:pointer;transition:all .15s}
+.fbtn.active{background:var(--color-background-info);color:var(--color-text-info);border-color:var(--color-border-info)}
+.stats{font-size:13px;color:var(--color-text-secondary);margin-bottom:.75rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;max-height:520px;overflow-y:auto;padding-right:4px}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:12px 14px;cursor:pointer;transition:border-color .15s}
+.card:hover{border-color:var(--color-border-secondary)}
+.card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px}
+.card-title{font-size:13px;font-weight:500;color:var(--color-text-primary);line-height:1.4}
+.badge{font-size:10px;padding:2px 7px;border-radius:10px;white-space:nowrap;flex-shrink:0}
+.b-paid{background:#EEEDFE;color:#3C3489}
+.b-free{background:#EAF3DE;color:#27500A}
+.b-yt{background:#FCEBEB;color:#791F1F}
+.card-meta{font-size:11px;color:var(--color-text-secondary);margin-bottom:6px}
+.card-api{font-size:11px;padding:2px 7px;border-radius:6px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);color:var(--color-text-secondary);display:inline-block}
+.detail{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;margin-top:6px;font-size:12px;color:var(--color-text-secondary);line-height:1.6}
+.detail a{color:var(--color-text-info);text-decoration:none}
+.detail a:hover{text-decoration:underline}
+.linkrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.linkbtn{display:inline-flex;align-items:center;justify-content:center;padding:6px 10px;border-radius:999px;border:0.5px solid var(--color-border-info);background:var(--color-background-info);color:var(--color-text-info);font-size:11px;text-decoration:none;white-space:nowrap}
+.linkbtn.secondary{background:var(--color-background-primary);border-color:var(--color-border-tertiary);color:var(--color-text-primary)}
+.linkbtn:hover{text-decoration:none}
+.hidden{display:none}
+</style>
+<div class="wrap">
+  <div class="top">
+    <input id="q" placeholder="Search skills..." oninput="render()">
+    <div class="filters" id="filters">
+      <button class="fbtn active" data-f="all" onclick="setF(this)">All 200</button>
+      <button class="fbtn" data-f="paid" onclick="setF(this)">Paid + Cert</button>
+      <button class="fbtn" data-f="free" onclick="setF(this)">Free + Cert</button>
+      <button class="fbtn" data-f="yt" onclick="setF(this)">YouTube Courses</button>
+    </div>
+  </div>
+  <div class="stats" id="stats"></div>
+  <div class="grid" id="grid"></div>
+</div>
+<script>
+const SKILLS=[
+  // --- WEB DEV ---
+  {t:"HTML & CSS Fundamentals",cat:"Web Dev",type:"free",cert:true,api:"None needed",platform:"freeCodeCamp",url:"https://www.freecodecamp.org/learn"},
+  {t:"Responsive Web Design",cat:"Web Dev",type:"free",cert:true,api:"None needed",platform:"freeCodeCamp",url:"https://www.freecodecamp.org/learn"},
+  {t:"JavaScript Basics",cat:"Web Dev",type:"free",cert:true,api:"None needed",platform:"The Odin Project",url:"https://www.theodinproject.com"},
+  {t:"React.js",cat:"Web Dev",type:"free",cert:false,api:"None needed",platform:"React docs",url:"https://react.dev/learn"},
+  {t:"Next.js 14",cat:"Web Dev",type:"free",cert:false,api:"None needed",platform:"Next.js Learn",url:"https://nextjs.org/learn"},
+  {t:"Vue.js",cat:"Web Dev",type:"free",cert:false,api:"None needed",platform:"Vue tutorial",url:"https://vuejs.org/tutorial/"},
+  {t:"TypeScript",cat:"Web Dev",type:"free",cert:false,api:"None needed",platform:"TypeScript handbook",url:"https://www.typescriptlang.org/docs/handbook/intro.html"},
+  {t:"Node.js & Express",cat:"Web Dev",type:"free",cert:true,api:"None needed",platform:"freeCodeCamp",url:"https://www.freecodecamp.org/learn/back-end-development-and-apis/"},
+  {t:"REST API Design",cat:"Web Dev",type:"free",cert:false,api:"None needed",platform:"REST API guide",url:"https://restfulapi.net/"},
+  {t:"GraphQL",cat:"Web Dev",type:"free",cert:false,api:"None needed",platform:"GraphQL learn",url:"https://graphql.org/learn/"},
+  // --- AI / ML ---
+  {t:"Machine Learning (Andrew Ng)",cat:"AI/ML",type:"free",cert:true,api:"None needed",platform:"Coursera Audit",url:"https://www.coursera.org/specializations/machine-learning-introduction"},
+  {t:"Deep Learning Specialization",cat:"AI/ML",type:"paid",cert:true,api:"None needed",platform:"Coursera",url:"https://www.coursera.org/specializations/deep-learning"},
+  {t:"Hugging Face NLP",cat:"AI/ML",type:"free",cert:true,api:"HuggingFace Inference API (free)",platform:"Hugging Face",url:"https://huggingface.co/learn"},
+  {t:"Google Gemini API",cat:"AI/ML",type:"free",cert:false,api:"Gemini 2.5 Pro (free tier)",platform:"Google AI Studio",url:"https://aistudio.google.com"},
+  {t:"OpenAI API Basics",cat:"AI/ML",type:"free",cert:false,api:"OpenAI free $5 credits",platform:"OpenAI docs",url:"https://platform.openai.com/docs/overview"},
+  {t:"LangChain",cat:"AI/ML",type:"free",cert:false,api:"Groq API (free)",platform:"LangChain docs",url:"https://python.langchain.com/docs/introduction/"},
+  {t:"Prompt Engineering",cat:"AI/ML",type:"free",cert:true,api:"Anthropic free tier",platform:"DeepLearning.AI",url:"https://www.deeplearning.ai/short-courses/"},
+  {t:"RAG (Retrieval Augmented Gen)",cat:"AI/ML",type:"free",cert:false,api:"Groq/Gemini free",platform:"DeepLearning.AI course",url:"https://www.deeplearning.ai/short-courses/building-and-evaluating-advanced-rag-apps/"},
+  {t:"Fine-tuning LLMs",cat:"AI/ML",type:"free",cert:false,api:"Hugging Face free",platform:"Hugging Face course",url:"https://huggingface.co/learn"},
+  {t:"Local LLMs with Ollama",cat:"AI/ML",type:"free",cert:false,api:"No API – local",platform:"Ollama docs",url:"https://docs.ollama.com/"},
+  {t:"Computer Vision (OpenCV)",cat:"AI/ML",type:"free",cert:true,api:"None needed",platform:"OpenCV University",url:"https://opencv.org/university/"},
+  {t:"TensorFlow Developer Cert",cat:"AI/ML",type:"paid",cert:true,api:"None needed",platform:"TensorFlow / Coursera",url:"https://www.coursera.org/professional-certificates/tensorflow-in-practice"},
+  {t:"PyTorch Basics",cat:"AI/ML",type:"free",cert:false,api:"None needed",platform:"PyTorch tutorials",url:"https://pytorch.org/tutorials/beginner/basics/intro.html"},
+  {t:"Reinforcement Learning",cat:"AI/ML",type:"free",cert:false,api:"None needed",platform:"David Silver lectures",url:"https://www.davidsilver.uk/teaching/"},
+  {t:"AI Agents with AutoGen",cat:"AI/ML",type:"free",cert:false,api:"Gemini/Groq free",platform:"AutoGen docs",url:"https://microsoft.github.io/autogen/"},
+  // --- DATA SCIENCE ---
+  {t:"Python for Data Science",cat:"Data Science",type:"free",cert:true,api:"None needed",platform:"Kaggle Learn",url:"https://www.kaggle.com/learn"},
+  {t:"Pandas & NumPy",cat:"Data Science",type:"free",cert:true,api:"None needed",platform:"Kaggle Learn",url:"https://www.kaggle.com/learn/pandas"},
+  {t:"Data Visualization (Matplotlib)",cat:"Data Science",type:"free",cert:false,api:"None needed",platform:"Matplotlib tutorials",url:"https://matplotlib.org/stable/tutorials/"},
+  {t:"SQL for Data Analysis",cat:"Data Science",type:"free",cert:true,api:"None needed",platform:"Mode Analytics",url:"https://mode.com/sql-tutorial/"},
+  {t:"Power BI",cat:"Data Science",type:"free",cert:true,api:"None needed",platform:"Microsoft Learn",url:"https://learn.microsoft.com/en-us/training/powerplatform/power-bi"},
+  {t:"Tableau",cat:"Data Science",type:"free",cert:false,api:"None needed",platform:"Tableau training",url:"https://www.tableau.com/learn/training"},
+  {t:"Statistics for DS",cat:"Data Science",type:"free",cert:true,api:"None needed",platform:"Khan Academy",url:"https://www.khanacademy.org/math/statistics-probability"},
+  {t:"Apache Spark",cat:"Data Science",type:"free",cert:false,api:"None needed",platform:"Spark quick start",url:"https://spark.apache.org/docs/latest/quick-start.html"},
+  {t:"Data Mining (DMBI)",cat:"Data Science",type:"free",cert:false,api:"None needed",platform:"IBM data mining",url:"https://www.ibm.com/topics/data-mining"},
+  {t:"Business Intelligence",cat:"Data Science",type:"free",cert:true,api:"None needed",platform:"Google Data Analytics Cert",url:"https://www.coursera.org/professional-certificates/google-data-analytics"},
+  // --- CLOUD ---
+  {t:"AWS Cloud Practitioner",cat:"Cloud",type:"paid",cert:true,api:"AWS Free Tier",platform:"AWS Skill Builder",url:"https://skillbuilder.aws"},
+  {t:"Google Cloud Digital Leader",cat:"Cloud",type:"free",cert:true,api:"GCP Free Tier",platform:"Google Cloud Skills Boost",url:"https://cloudskillsboost.google"},
+  {t:"Azure Fundamentals (AZ-900)",cat:"Cloud",type:"free",cert:true,api:"Azure Free 200$",platform:"Microsoft Learn",url:"https://learn.microsoft.com/en-us/certifications/azure-fundamentals/"},
+  {t:"Docker",cat:"Cloud",type:"free",cert:false,api:"None needed",platform:"Docker getting started",url:"https://docs.docker.com/get-started/"},
+  {t:"Kubernetes",cat:"Cloud",type:"free",cert:false,api:"None needed",platform:"Kubernetes basics",url:"https://kubernetes.io/docs/tutorials/kubernetes-basics/"},
+  {t:"Terraform",cat:"Cloud",type:"free",cert:true,api:"None needed",platform:"HashiCorp Tutorials",url:"https://developer.hashicorp.com/terraform/tutorials"},
+  {t:"CI/CD with GitHub Actions",cat:"Cloud",type:"free",cert:false,api:"GitHub free",platform:"GitHub Actions docs",url:"https://docs.github.com/en/actions"},
+  {t:"Serverless (Firebase/Vercel)",cat:"Cloud",type:"free",cert:false,api:"Firebase free tier",platform:"Firebase docs",url:"https://firebase.google.com/docs"},
+  // --- CYBERSECURITY ---
+  {t:"Network Security Basics",cat:"Security",type:"free",cert:true,api:"None needed",platform:"Cybrary Free",url:"https://www.cybrary.it"},
+  {t:"Ethical Hacking",cat:"Security",type:"free",cert:true,api:"None needed",platform:"TryHackMe (free rooms)",url:"https://tryhackme.com"},
+  {t:"Cryptography",cat:"Security",type:"free",cert:true,api:"None needed",platform:"Coursera Audit",url:"https://www.coursera.org/learn/crypto"},
+  {t:"Penetration Testing",cat:"Security",type:"free",cert:false,api:"None needed",platform:"TryHackMe pentesting path",url:"https://tryhackme.com/path/outline/pentesting"},
+  {t:"OWASP Top 10",cat:"Security",type:"free",cert:false,api:"None needed",platform:"OWASP Top 10",url:"https://owasp.org/www-project-top-ten/"},
+  {t:"CompTIA Security+ Prep",cat:"Security",type:"paid",cert:true,api:"None needed",platform:"Udemy – Mike Chapple",url:"https://www.udemy.com"},
+  {t:"SOC Analyst",cat:"Security",type:"free",cert:true,api:"None needed",platform:"TryHackMe SOC Path",url:"https://tryhackme.com/path/outline/soclevel1"},
+  // --- PROGRAMMING ---
+  {t:"Python (Beginner→Advanced)",cat:"Programming",type:"free",cert:true,api:"None needed",platform:"freeCodeCamp",url:"https://www.freecodecamp.org"},
+  {t:"Java",cat:"Programming",type:"free",cert:false,api:"None needed",platform:"Java learn",url:"https://dev.java/learn/"},
+  {t:"C++",cat:"Programming",type:"free",cert:false,api:"None needed",platform:"LearnCpp",url:"https://www.learncpp.com/"},
+  {t:"Go (Golang)",cat:"Programming",type:"free",cert:false,api:"None needed",platform:"Go tour",url:"https://go.dev/tour/"},
+  {t:"Rust",cat:"Programming",type:"free",cert:false,api:"None needed",platform:"The Rust Book (free)",url:"https://doc.rust-lang.org/book/"},
+  {t:"Kotlin",cat:"Programming",type:"free",cert:false,api:"None needed",platform:"Kotlin docs",url:"https://kotlinlang.org/docs/home.html"},
+  {t:"Swift (iOS)",cat:"Programming",type:"free",cert:false,api:"None needed",platform:"App Dev Training",url:"https://developer.apple.com/tutorials/app-dev-training"},
+  {t:"Dart & Flutter",cat:"Programming",type:"free",cert:false,api:"None needed",platform:"Flutter codelab",url:"https://docs.flutter.dev/get-started/codelab"},
+  {t:"R Programming",cat:"Programming",type:"free",cert:true,api:"None needed",platform:"Kaggle Learn",url:"https://www.kaggle.com/learn/r"},
+  {t:"Algorithm Design & DS",cat:"Programming",type:"free",cert:true,api:"None needed",platform:"freeCodeCamp",url:"https://www.freecodecamp.org/learn/javascript-algorithms-and-data-structures/"},
+  // --- DATABASES ---
+  {t:"MySQL",cat:"Databases",type:"free",cert:true,api:"None needed",platform:"MySQL HeatWave cert",url:"https://www.oracle.com/education/certification/"},
+  {t:"PostgreSQL",cat:"Databases",type:"free",cert:false,api:"None needed",platform:"PostgreSQL tutorial",url:"https://www.postgresql.org/docs/current/tutorial.html"},
+  {t:"MongoDB",cat:"Databases",type:"free",cert:true,api:"MongoDB Atlas free",platform:"MongoDB University",url:"https://learn.mongodb.com"},
+  {t:"Redis",cat:"Databases",type:"free",cert:true,api:"Redis Cloud free",platform:"Redis University",url:"https://university.redis.io"},
+  {t:"Firebase Firestore",cat:"Databases",type:"free",cert:false,api:"Firebase free tier",platform:"Firestore quickstart",url:"https://firebase.google.com/docs/firestore/quickstart"},
+  {t:"Elasticsearch",cat:"Databases",type:"free",cert:true,api:"Elastic Cloud free",platform:"Elastic Training",url:"https://www.elastic.co/training/"},
+  // --- DEVOPS ---
+  {t:"Linux Command Line",cat:"DevOps",type:"free",cert:true,api:"None needed",platform:"Linux Foundation Free",url:"https://training.linuxfoundation.org"},
+  {t:"Git & GitHub",cat:"DevOps",type:"free",cert:false,api:"GitHub free",platform:"GitHub get started",url:"https://docs.github.com/en/get-started"},
+  {t:"Ansible",cat:"DevOps",type:"free",cert:false,api:"None needed",platform:"Ansible getting started",url:"https://docs.ansible.com/ansible/latest/getting_started/index.html"},
+  {t:"Prometheus & Grafana",cat:"DevOps",type:"free",cert:false,api:"None needed",platform:"Grafana getting started",url:"https://grafana.com/docs/grafana/latest/getting-started/"},
+  {t:"Nginx & Load Balancing",cat:"DevOps",type:"free",cert:false,api:"None needed",platform:"Nginx load balancing",url:"https://docs.nginx.com/nginx/admin-guide/load-balancer/http-load-balancer/"},
+  // --- IoT ---
+  {t:"Arduino Programming",cat:"IoT",type:"free",cert:false,api:"None needed",platform:"Arduino examples",url:"https://docs.arduino.cc/built-in-examples/"},
+  {t:"Raspberry Pi",cat:"IoT",type:"free",cert:false,api:"None needed",platform:"Raspberry Pi getting started",url:"https://www.raspberrypi.com/documentation/computers/getting-started.html"},
+  {t:"MQTT Protocol",cat:"IoT",type:"free",cert:false,api:"HiveMQ free broker",platform:"MQTT getting started",url:"https://mqtt.org/getting-started/"},
+  {t:"ESP32 / MicroPython",cat:"IoT",type:"free",cert:false,api:"None needed",platform:"MicroPython ESP32",url:"https://docs.micropython.org/en/latest/esp32/tutorial/intro.html"},
+  {t:"Edge AI with TFLite",cat:"IoT",type:"free",cert:false,api:"None needed",platform:"TensorFlow Lite guide",url:"https://www.tensorflow.org/lite/guide"},
+  // --- MOBILE ---
+  {t:"Android (Jetpack Compose)",cat:"Mobile",type:"free",cert:true,api:"None needed",platform:"Android basics course",url:"https://developer.android.com/courses/android-basics-compose/course"},
+  {t:"React Native",cat:"Mobile",type:"free",cert:false,api:"None needed",platform:"React Native docs",url:"https://reactnative.dev/docs/getting-started"},
+  {t:"Flutter Advanced",cat:"Mobile",type:"paid",cert:true,api:"None needed",platform:"Udemy – Angela Yu",url:"https://www.udemy.com"},
+  // --- DESIGN / UI ---
+  {t:"Figma UI Design",cat:"Design",type:"free",cert:true,api:"None needed",platform:"Figma Community",url:"https://www.figma.com/resources/learn-design/"},
+  {t:"UX Research",cat:"Design",type:"free",cert:true,api:"None needed",platform:"Google UX Design Cert",url:"https://www.coursera.org/professional-certificates/google-ux-design"},
+  {t:"Adobe XD",cat:"Design",type:"free",cert:false,api:"None needed",platform:"Adobe XD tutorials",url:"https://helpx.adobe.com/xd/tutorials.html"},
+  {t:"CSS Animations",cat:"Design",type:"free",cert:false,api:"None needed",platform:"MDN animations",url:"https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animations/Using_CSS_animations"},
+  {t:"Tailwind CSS",cat:"Design",type:"free",cert:false,api:"None needed",platform:"Tailwind docs",url:"https://tailwindcss.com/docs/installation"},
+  // --- BLOCKCHAIN ---
+  {t:"Blockchain Fundamentals",cat:"Blockchain",type:"free",cert:true,api:"None needed",platform:"IBM SkillsBuild",url:"https://skillsbuild.org"},
+  {t:"Solidity (Smart Contracts)",cat:"Blockchain",type:"free",cert:false,api:"None needed",platform:"Solidity docs",url:"https://docs.soliditylang.org/en/latest/"},
+  {t:"Web3.js / Ethers.js",cat:"Blockchain",type:"free",cert:false,api:"Alchemy free tier",platform:"Ethers docs",url:"https://docs.ethers.org/v6/"},
+  // --- SOFT SKILLS / BUSINESS ---
+  {t:"Project Management (PMP prep)",cat:"Business",type:"paid",cert:true,api:"None needed",platform:"Udemy – Andrew Ramdayal",url:"https://www.udemy.com"},
+  {t:"Agile & Scrum",cat:"Business",type:"free",cert:true,api:"None needed",platform:"Scrum.org",url:"https://www.scrum.org/resources/scrum-guide"},
+  {t:"Google Project Mgmt Cert",cat:"Business",type:"free",cert:true,api:"None needed",platform:"Coursera",url:"https://www.coursera.org/professional-certificates/google-project-management"},
+  {t:"Digital Marketing",cat:"Business",type:"free",cert:true,api:"None needed",platform:"Google Digital Garage",url:"https://learndigital.withgoogle.com"},
+  {t:"SEO Fundamentals",cat:"Business",type:"free",cert:true,api:"None needed",platform:"SEMrush Academy",url:"https://www.semrush.com/academy/"},
+  {t:"Google Analytics 4",cat:"Business",type:"free",cert:true,api:"GA4 free",platform:"Google Skillshop",url:"https://skillshop.withgoogle.com"},
+  {t:"Public Speaking",cat:"Business",type:"free",cert:false,api:"None needed",platform:"TED public speaking",url:"https://www.ted.com/topics/public+speaking"},
+  {t:"Technical Writing",cat:"Business",type:"free",cert:true,api:"None needed",platform:"Google Tech Writing",url:"https://developers.google.com/tech-writing"},
+  // --- FREE API-POWERED SKILLS ---
+  {t:"OpenWeather API",cat:"Free APIs",type:"free",cert:false,api:"OpenWeatherMap (free)",platform:"OpenWeather current weather",url:"https://openweathermap.org/current"},
+  {t:"Google Maps API",cat:"Free APIs",type:"free",cert:false,api:"Google Maps ($200/mo free)",platform:"Maps JavaScript API",url:"https://developers.google.com/maps/documentation/javascript/overview"},
+  {t:"Twilio (SMS/Call)",cat:"Free APIs",type:"free",cert:false,api:"Twilio trial free",platform:"Twilio Docs",url:"https://www.twilio.com/try-twilio"},
+  {t:"Stripe Payments",cat:"Free APIs",type:"free",cert:false,api:"Stripe test mode free",platform:"Stripe payments docs",url:"https://docs.stripe.com/payments/accept-a-payment"},
+  {t:"Groq API (LLM)",cat:"Free APIs",type:"free",cert:false,api:"Groq free (60 req/min)",platform:"groq.com",url:"https://console.groq.com"},
+  {t:"Together AI",cat:"Free APIs",type:"free",cert:false,api:"Together $1 free credit",platform:"together.ai",url:"https://www.together.ai"},
+  {t:"Cohere API",cat:"Free APIs",type:"free",cert:false,api:"Cohere Trial free",platform:"cohere.com",url:"https://dashboard.cohere.com"},
+  {t:"Mistral AI API",cat:"Free APIs",type:"free",cert:false,api:"Mistral free tier",platform:"mistral.ai",url:"https://console.mistral.ai"},
+  {t:"HuggingFace Inference",cat:"Free APIs",type:"free",cert:false,api:"HF Inference API free",platform:"huggingface.co",url:"https://huggingface.co/inference-api"},
+  {t:"NVIDIA NIM API",cat:"Free APIs",type:"free",cert:false,api:"NVIDIA NIM (1000 free credits)",platform:"build.nvidia.com",url:"https://build.nvidia.com"},
+  {t:"Anthropic Claude API",cat:"Free APIs",type:"free",cert:false,api:"Artifacts use it free!",platform:"anthropic.com",url:"https://console.anthropic.com"},
+  {t:"OpenRouter",cat:"Free APIs",type:"free",cert:false,api:"OpenRouter ($1 free)",platform:"openrouter.ai",url:"https://openrouter.ai"},
+  {t:"Stability AI",cat:"Free APIs",type:"free",cert:false,api:"Stability trial free",platform:"stability.ai",url:"https://platform.stability.ai"},
+  {t:"Replicate",cat:"Free APIs",type:"free",cert:false,api:"Replicate $5 free",platform:"replicate.com",url:"https://replicate.com"},
+  {t:"NewsAPI",cat:"Free APIs",type:"free",cert:false,api:"NewsAPI developer free",platform:"newsapi.org",url:"https://newsapi.org"},
+  {t:"GitHub API",cat:"Free APIs",type:"free",cert:false,api:"GitHub REST free",platform:"docs.github.com",url:"https://docs.github.com/en/rest"},
+  {t:"Spotify API",cat:"Free APIs",type:"free",cert:false,api:"Spotify dev free",platform:"developer.spotify.com",url:"https://developer.spotify.com"},
+  {t:"NASA APIs",cat:"Free APIs",type:"free",cert:false,api:"NASA APOD etc. free",platform:"api.nasa.gov",url:"https://api.nasa.gov"},
+  {t:"Reddit API",cat:"Free APIs",type:"free",cert:false,api:"Reddit API free",platform:"reddit.com/dev",url:"https://www.reddit.com/dev/api"},
+  {t:"Alpha Vantage (Stocks)",cat:"Free APIs",type:"free",cert:false,api:"Alpha Vantage free tier",platform:"alphavantage.co",url:"https://www.alphavantage.co"},
+  // --- MORE ML/AI ---
+  {t:"NLP with spaCy",cat:"AI/ML",type:"free",cert:false,api:"None needed",platform:"spaCy usage",url:"https://spacy.io/usage"},
+  {t:"Image Generation (Stable Diffusion)",cat:"AI/ML",type:"free",cert:false,api:"Replicate free / local",platform:"Diffusers docs",url:"https://huggingface.co/docs/diffusers/index"},
+  {t:"Speech Recognition (Whisper)",cat:"AI/ML",type:"free",cert:false,api:"Groq Whisper free",platform:"OpenAI speech to text",url:"https://platform.openai.com/docs/guides/speech-to-text"},
+  {t:"Vector Databases (Pinecone)",cat:"AI/ML",type:"free",cert:false,api:"Pinecone free tier",platform:"Pinecone docs",url:"https://docs.pinecone.io/guides/get-started/overview"},
+  {t:"MLOps Basics",cat:"AI/ML",type:"free",cert:true,api:"None needed",platform:"MLOps Community",url:"https://mlops.community"},
+  {t:"Kaggle Competitions",cat:"AI/ML",type:"free",cert:true,api:"None needed",platform:"Kaggle",url:"https://www.kaggle.com/competitions"},
+  // --- MORE WEB ---
+  {t:"WebSockets",cat:"Web Dev",type:"free",cert:false,api:"None needed",platform:"MDN WebSocket",url:"https://developer.mozilla.org/en-US/docs/Web/API/WebSocket"},
+  {t:"Authentication (OAuth/JWT)",cat:"Web Dev",type:"free",cert:false,api:"None needed",platform:"OAuth 2.0 PKCE",url:"https://oauth.net/2/pkce/"},
+  {t:"Web Scraping (Python)",cat:"Web Dev",type:"free",cert:false,api:"None needed",platform:"Scrapy tutorial",url:"https://docs.scrapy.org/en/latest/intro/tutorial.html"},
+  {t:"PWA (Progressive Web Apps)",cat:"Web Dev",type:"free",cert:false,api:"None needed",platform:"web.dev PWA",url:"https://web.dev/learn/pwa/"},
+  {t:"Three.js (3D Web)",cat:"Web Dev",type:"free",cert:false,api:"None needed",platform:"Three.js manual",url:"https://threejs.org/manual/"},
+  {t:"Astro.js",cat:"Web Dev",type:"free",cert:false,api:"None needed",platform:"Astro tutorial",url:"https://docs.astro.build/en/tutorial/0-introduction/"},
+  {t:"Svelte",cat:"Web Dev",type:"free",cert:false,api:"None needed",platform:"Svelte tutorial",url:"https://svelte.dev/tutorial"},
+  // --- MATH ---
+  {t:"Linear Algebra for ML",cat:"Math",type:"free",cert:true,api:"None needed",platform:"3Blue1Brown + Coursera",url:"https://www.coursera.org/learn/linear-algebra-machine-learning"},
+  {t:"Calculus for ML",cat:"Math",type:"free",cert:true,api:"None needed",platform:"Khan Academy",url:"https://www.khanacademy.org/math/multivariable-calculus"},
+  {t:"Probability & Bayesian",cat:"Math",type:"free",cert:true,api:"None needed",platform:"Coursera Audit",url:"https://www.coursera.org"},
+  // --- PRODUCTIVITY TOOLS ---
+  {t:"Notion Mastery",cat:"Tools",type:"free",cert:false,api:"Notion API free",platform:"Notion guides",url:"https://www.notion.com/help/guides"},
+  {t:"Obsidian (PKM)",cat:"Tools",type:"free",cert:false,api:"None needed",platform:"Obsidian help",url:"https://help.obsidian.md/Home"},
+  {t:"Zapier Automation",cat:"Tools",type:"free",cert:true,api:"Zapier free tier",platform:"Zapier University",url:"https://zapier.com/university"},
+  {t:"n8n Workflow Automation",cat:"Tools",type:"free",cert:false,api:"n8n cloud free",platform:"n8n docs",url:"https://docs.n8n.io/getting-started/"},
+  {t:"Make (Integromat)",cat:"Tools",type:"free",cert:true,api:"Make free tier",platform:"Make Academy",url:"https://academy.make.com"},
+  // --- NETWORKING ---
+  {t:"CompTIA Network+",cat:"Networking",type:"paid",cert:true,api:"None needed",platform:"Udemy – Mike Meyers",url:"https://www.udemy.com"},
+  {t:"CCNA Prep",cat:"Networking",type:"free",cert:false,api:"None needed",platform:"CCNA intro",url:"https://www.netacad.com/courses/networking/ccna-introduction-networks"},
+  {t:"Wireshark",cat:"Networking",type:"free",cert:true,api:"None needed",platform:"Wireshark University",url:"https://www.wireshark.org"},
+  // --- OPEN SOURCE ---
+  {t:"Git Open Source Contribution",cat:"Open Source",type:"free",cert:true,api:"GitHub free",platform:"firstcontributions.github.io",url:"https://firstcontributions.github.io"},
+  {t:"Linux Foundation Certs",cat:"Open Source",type:"paid",cert:true,api:"None needed",platform:"LF Training",url:"https://training.linuxfoundation.org"},
+  // EXTRA TO REACH 200 ---
+  {t:"Excel / Google Sheets",cat:"Tools",type:"free",cert:true,api:"Sheets API free",platform:"Google Skillshop",url:"https://skillshop.withgoogle.com"},
+  {t:"PowerPoint & Slides",cat:"Tools",type:"free",cert:false,api:"None needed",platform:"Microsoft PowerPoint help",url:"https://support.microsoft.com/powerpoint"},
+  {t:"Canva Design",cat:"Design",type:"free",cert:true,api:"None needed",platform:"Canva Design School",url:"https://www.canva.com/designschool/"},
+  {t:"Email Marketing",cat:"Business",type:"free",cert:true,api:"Mailchimp free",platform:"Mailchimp Academy",url:"https://mailchimp.com/academy/"},
+  {t:"Copywriting",cat:"Business",type:"free",cert:false,api:"None needed",platform:"Copywriting basics",url:"https://www.copyblogger.com/copywriting-101/"},
+  {t:"Video Editing (DaVinci)",cat:"Creative",type:"free",cert:false,api:"None needed",platform:"DaVinci training",url:"https://www.blackmagicdesign.com/products/davinciresolve/training"},
+  {t:"After Effects Basics",cat:"Creative",type:"free",cert:false,api:"None needed",platform:"After Effects tutorials",url:"https://helpx.adobe.com/after-effects/tutorials.html"},
+  {t:"Blender 3D",cat:"Creative",type:"free",cert:false,api:"None needed",platform:"Blender tutorials",url:"https://www.blender.org/support/tutorials/"},
+  {t:"Unity Game Dev",cat:"Game Dev",type:"free",cert:true,api:"Unity free",platform:"Unity Learn",url:"https://learn.unity.com"},
+  {t:"Unreal Engine 5",cat:"Game Dev",type:"free",cert:false,api:"None needed",platform:"Unreal getting started",url:"https://dev.epicgames.com/community/unreal-engine/getting-started"},
+  {t:"Godot Engine",cat:"Game Dev",type:"free",cert:false,api:"None needed",platform:"Godot step by step",url:"https://docs.godotengine.org/en/stable/getting_started/step_by_step/index.html"},
+  {t:"Blockchain with Hardhat",cat:"Blockchain",type:"free",cert:false,api:"Alchemy free",platform:"Hardhat getting started",url:"https://hardhat.org/hardhat-runner/docs/getting-started"},
+  {t:"System Design",cat:"Programming",type:"free",cert:false,api:"None needed",platform:"System design primer",url:"https://github.com/donnemartin/system-design-primer"},
+  {t:"Design Patterns",cat:"Programming",type:"free",cert:false,api:"None needed",platform:"Refactoring.Guru (free)",url:"https://refactoring.guru/design-patterns"},
+  {t:"Clean Code Principles",cat:"Programming",type:"free",cert:false,api:"None needed",platform:"Clean Code book",url:"https://www.oreilly.com/library/view/clean-code/9780136083238/"},
+  {t:"Microservices Architecture",cat:"Cloud",type:"free",cert:false,api:"None needed",platform:"Microservices article",url:"https://martinfowler.com/articles/microservices.html"},
+  {t:"API Security (OAuth2/PKCE)",cat:"Security",type:"free",cert:false,api:"None needed",platform:"OAuth PKCE",url:"https://oauth.net/2/pkce/"},
+  {t:"AWS Lambda & Serverless",cat:"Cloud",type:"free",cert:false,api:"AWS free tier",platform:"AWS Lambda getting started",url:"https://docs.aws.amazon.com/lambda/latest/dg/getting-started.html"},
+  {t:"Data Engineering (dbt)",cat:"Data Science",type:"free",cert:true,api:"None needed",platform:"dbt Learn",url:"https://learn.getdbt.com"},
+  {t:"Apache Kafka",cat:"DevOps",type:"free",cert:true,api:"Confluent Cloud free",platform:"Confluent Developer",url:"https://developer.confluent.io"},
+  {t:"Airflow (Data Pipelines)",cat:"Data Science",type:"free",cert:false,api:"None needed",platform:"Airflow tutorial",url:"https://airflow.apache.org/docs/apache-airflow/stable/tutorial/index.html"},
+  {t:"Supabase",cat:"Databases",type:"free",cert:false,api:"Supabase free tier",platform:"Supabase quickstart",url:"https://supabase.com/docs/guides/getting-started/tutorials/with-nextjs"},
+  {t:"PlanetScale (MySQL)",cat:"Databases",type:"free",cert:false,api:"PlanetScale free",platform:"PlanetScale tutorials",url:"https://planetscale.com/docs/tutorials"},
+  {t:"Edge Computing",cat:"Cloud",type:"free",cert:false,api:"Cloudflare Workers free",platform:"Cloudflare Docs",url:"https://developers.cloudflare.com/workers/"},
+  {t:"WebAssembly (WASM)",cat:"Web Dev",type:"free",cert:false,api:"None needed",platform:"MDN WebAssembly",url:"https://developer.mozilla.org/en-US/docs/WebAssembly/Concepts"},
+  {t:"Accessibility (WCAG)",cat:"Web Dev",type:"free",cert:true,api:"None needed",platform:"Web.dev",url:"https://web.dev/accessibility/"},
+  {t:"Performance Optimization",cat:"Web Dev",type:"free",cert:false,api:"None needed",platform:"web.dev performance",url:"https://web.dev/learn/performance/"},
+  {t:"Testing (Jest/Vitest)",cat:"Web Dev",type:"free",cert:false,api:"None needed",platform:"Vitest guide",url:"https://vitest.dev/guide/"},
+  {t:"Playwright / Cypress E2E",cat:"Web Dev",type:"free",cert:false,api:"None needed",platform:"Playwright intro",url:"https://playwright.dev/docs/intro"},
+  {t:"Storybook (Component Docs)",cat:"Web Dev",type:"free",cert:false,api:"None needed",platform:"Storybook tutorial",url:"https://storybook.js.org/tutorials/intro-to-storybook/react/en/get-started/"},
+  {t:"Hugging Face Spaces",cat:"AI/ML",type:"free",cert:false,api:"HF Spaces free GPU",platform:"huggingface.co",url:"https://huggingface.co/spaces"},
+  {t:"Google Colab Pro",cat:"AI/ML",type:"paid",cert:false,api:"Free T4 GPU (Colab free)",platform:"colab.google",url:"https://colab.google"},
+  {t:"Gradio (AI Demos)",cat:"AI/ML",type:"free",cert:false,api:"None needed",platform:"Gradio quickstart",url:"https://www.gradio.app/guides/quickstart"},
+  {t:"Streamlit (ML Apps)",cat:"AI/ML",type:"free",cert:false,api:"Streamlit Cloud free",platform:"Streamlit get started",url:"https://docs.streamlit.io/get-started"},
+  {t:"FastAPI",cat:"Web Dev",type:"free",cert:false,api:"None needed",platform:"FastAPI tutorial",url:"https://fastapi.tiangolo.com/tutorial/"},
+  {t:"tRPC",cat:"Web Dev",type:"free",cert:false,api:"None needed",platform:"tRPC docs",url:"https://trpc.io/docs"},
+  {t:"Prisma ORM",cat:"Databases",type:"free",cert:false,api:"None needed",platform:"Prisma getting started",url:"https://www.prisma.io/docs/getting-started"},
+  {t:"Drizzle ORM",cat:"Databases",type:"free",cert:false,api:"None needed",platform:"Drizzle overview",url:"https://orm.drizzle.team/docs/overview"},
+  {t:"Pydantic & Data Validation",cat:"Programming",type:"free",cert:false,api:"None needed",platform:"Pydantic docs",url:"https://docs.pydantic.dev/latest/"},
+  {t:"Celery (Task Queues)",cat:"DevOps",type:"free",cert:false,api:"None needed",platform:"Celery intro",url:"https://docs.celeryq.dev/en/stable/getting-started/introduction.html"},
+  {t:"WebRTC",cat:"Web Dev",type:"free",cert:false,api:"None needed",platform:"WebRTC overview",url:"https://webrtc.org/getting-started/overview"},
+  {t:"Socket.IO",cat:"Web Dev",type:"free",cert:false,api:"None needed",platform:"Socket.IO get started",url:"https://socket.io/get-started"},
+  {t:"Nx Monorepo",cat:"DevOps",type:"free",cert:false,api:"None needed",platform:"Nx tutorial",url:"https://nx.dev/getting-started/tutorials/react-monorepo-tutorial"},
+  {t:"GitHub Copilot",cat:"AI/ML",type:"paid",cert:false,api:"Free for students",platform:"github.com/copilot",url:"https://github.com/features/copilot"},
+  {t:"Cursor AI IDE",cat:"AI/ML",type:"free",cert:false,api:"Claude API inside",platform:"cursor.com",url:"https://www.cursor.com"},
+  {t:"v0.dev (UI Generation)",cat:"AI/ML",type:"free",cert:false,api:"Vercel AI free",platform:"v0.dev",url:"https://v0.dev"},
+  {t:"Bolt.new (Full-Stack AI)",cat:"AI/ML",type:"free",cert:false,api:"Claude/Gemini inside",platform:"bolt.new",url:"https://bolt.new"},
+  {t:"LiteLLM Proxy",cat:"AI/ML",type:"free",cert:false,api:"All LLM APIs free",platform:"litellm.ai",url:"https://litellm.ai"},
+  {t:"Dify.ai (LLM Apps)",cat:"AI/ML",type:"free",cert:false,api:"Multiple free APIs",platform:"dify.ai",url:"https://dify.ai"},
+  {t:"Flowise (LLM Flows)",cat:"AI/ML",type:"free",cert:false,api:"Local/free APIs",platform:"flowiseai.com",url:"https://flowiseai.com"},
+];
+
+let activeF="all";
+function setF(btn){
+  activeF=btn.dataset.f;
+  document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+function typeLabel(s){
+  if(s.type==="paid") return {label:"Paid + Cert",cls:"b-paid"};
+  if(s.type==="free"&&s.cert) return {label:"Free + Cert",cls:"b-free"};
+  return {label:"YouTube / Free",cls:"b-yt"};
+}
+function buildYoutubeQuery(skill, variant){
+  const terms=[skill.t,skill.cat,"free course"];
+  terms.push(variant==="playlist" ? "playlist" : "tutorial");
+  return `https://www.youtube.com/results?search_query=${encodeURIComponent(terms.join(" "))}`;
+}
+function buildResourceLinks(skill){
+  const videoUrl=buildYoutubeQuery(skill,"video");
+  const playlistUrl=buildYoutubeQuery(skill,"playlist");
+  const originalUrl=skill.url ? skill.url : "";
+  return `
+      <div class="linkrow">
+        <a class="linkbtn" href="${videoUrl}" target="_blank" rel="noopener noreferrer">YouTube video</a>
+        <a class="linkbtn" href="${playlistUrl}" target="_blank" rel="noopener noreferrer">YouTube playlist</a>
+        ${originalUrl ? `<a class="linkbtn secondary" href="${originalUrl}" target="_blank" rel="noopener noreferrer">Original resource</a>` : ""}
+      </div>`;
+}
+function matches(s){
+  const q=document.getElementById('q').value.toLowerCase();
+  if(q&&!s.t.toLowerCase().includes(q)&&!s.cat.toLowerCase().includes(q)&&!s.api.toLowerCase().includes(q)) return false;
+  if(activeF==="paid") return s.type==="paid";
+  if(activeF==="free") return s.type==="free"&&s.cert;
+  if(activeF==="yt") return true;
+  return true;
+}
+function render(){
+  const filtered=SKILLS.filter(matches);
+  document.getElementById('stats').textContent=`Showing ${filtered.length} of ${SKILLS.length} skills`;
+  const g=document.getElementById('grid');
+  g.innerHTML=filtered.map((s,i)=>{
+    const lb=typeLabel(s);
+    return `<div class="card" onclick="toggle(${SKILLS.indexOf(s)})">
+      <div class="card-head">
+        <div class="card-title">${s.t}</div>
+        <span class="badge ${lb.cls}">${lb.label}</span>
+      </div>
+      <div class="card-meta">${s.cat} &middot; ${s.platform}</div>
+      <div class="card-api">${s.api}</div>
+      <div class="detail hidden" id="d${SKILLS.indexOf(s)}" onclick="event.stopPropagation()">
+        <div>Direct YouTube options for this skill:</div>
+        ${buildResourceLinks(s)}
+      </div>
+    </div>`;
+  }).join('');
+}
+function toggle(i){
+  const d=document.getElementById('d'+i);
+  if(d) d.classList.toggle('hidden');
+}
+render();
+</script>

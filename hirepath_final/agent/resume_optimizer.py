@@ -5,6 +5,118 @@ Resume optimizer - Bridge between HirePath and resume-lm for ATS optimization.
 import json
 from typing import Dict, Any, List
 from pathlib import Path
+import re
+
+
+AI_PHRASE_REPLACEMENTS = {
+    "utilized": "used",
+    "leveraged": "used",
+    "orchestrated": "coordinated",
+    "spearheaded": "led",
+    "synergy": "collaboration",
+    "robust": "reliable",
+    "cutting-edge": "modern",
+    "world-class": "high-quality",
+}
+
+
+def _clean_text(value: str) -> str:
+    text = (value or "").strip()
+    for bad, replacement in AI_PHRASE_REPLACEMENTS.items():
+        text = re.sub(rf"\b{re.escape(bad)}\b", replacement, text, flags=re.IGNORECASE)
+    text = text.replace("--", ", ").replace("---", ", ").replace("\u2014", ", ")
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def _extract_resume_bullets(raw_text: str, limit: int = 8) -> List[str]:
+    lines = [line.strip() for line in (raw_text or "").splitlines() if line.strip()]
+    bullets = []
+    for line in lines:
+        if line.startswith(("-", "*", "•")):
+            cleaned = _clean_text(line.lstrip("-*• "))
+            if cleaned:
+                bullets.append(cleaned)
+    return bullets[:limit]
+
+
+def _inject_keywords_in_bullet(bullet: str, keywords: List[str]) -> str:
+    if not bullet:
+        return bullet
+
+    lower = bullet.lower()
+    already = [kw for kw in keywords if kw.lower() in lower]
+    if already:
+        return bullet
+
+    to_add = [kw for kw in keywords if kw][:2]
+    if not to_add:
+        return bullet
+
+    if re.search(r"\d", bullet):
+        return f"{bullet} using {', '.join(to_add)}"
+    return f"{bullet}, focused on {', '.join(to_add)}"
+
+
+def _build_targeted_edits(original_bullets: List[str], keywords: List[str], verbs: List[str]) -> List[Dict[str, str]]:
+    edits: List[Dict[str, str]] = []
+    action = verbs[0] if verbs else "Improved"
+    for original in original_bullets[:5]:
+        rewritten = _inject_keywords_in_bullet(original, keywords)
+        if rewritten and not re.match(r"^[A-Za-z]+", rewritten):
+            rewritten = f"{action} {rewritten[0].lower() + rewritten[1:] if len(rewritten) > 1 else rewritten.lower()}"
+        rewritten = _clean_text(rewritten)
+        edits.append({
+            "before": original,
+            "after": rewritten,
+            "reason": "Increased keyword alignment while preserving original claim"
+        })
+    return edits
+
+
+def _top_skills(skills: List[str], limit: int = 12) -> List[str]:
+    seen = set()
+    result = []
+    for skill in skills:
+        s = _clean_text(skill)
+        if not s:
+            continue
+        key = s.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        result.append(s)
+        if len(result) >= limit:
+            break
+    return result
+
+
+def _build_ats_resume_markdown(preview: Dict[str, Any], contact_line: str = "") -> str:
+    lines = []
+    lines.append(preview.get("headline", "Candidate Resume"))
+    if contact_line:
+        lines.append(contact_line)
+    lines.append("")
+    lines.append("PROFESSIONAL SUMMARY")
+    lines.append(preview.get("summary", ""))
+    lines.append("")
+    lines.append("TECHNICAL SKILLS")
+    lines.append("Core: " + " | ".join(preview.get("technical_skills", [])))
+    lines.append("Tools: " + " | ".join(preview.get("tool_skills", [])))
+    lines.append("")
+    lines.append("EXPERIENCE HIGHLIGHTS")
+    for bullet in preview.get("experience_points", [])[:6]:
+        lines.append(f"- {bullet}")
+    lines.append("")
+    lines.append("PROJECT HIGHLIGHTS")
+    for project in preview.get("project_points", [])[:4]:
+        lines.append(f"- {project}")
+    lines.append("")
+    lines.append("ATS KEYWORDS")
+    lines.append(" | ".join(preview.get("ats_keywords", [])))
+    lines.append("")
+    lines.append("EDUCATION")
+    lines.append(preview.get("education_line", ""))
+    return "\n".join(lines).strip()
 
 
 def prepare_optimization_payload(
@@ -33,7 +145,15 @@ def prepare_optimization_payload(
     
     summary = resume_data.get("raw_text", "").split("\n")[:6]
     headline = resume_data.get("job_titles", [domain.title()])[0] if resume_data.get("job_titles") else domain.title()
-    core_skills = resume_data.get("skills", [])[:12]
+    core_skills = _top_skills(resume_data.get("skills", []), 12)
+    resume_bullets = _extract_resume_bullets(resume_data.get("raw_text", ""), 10)
+    improved_bullets = [_inject_keywords_in_bullet(bullet, missing_keywords[:5]) for bullet in (resume_bullets or [])]
+    if not improved_bullets:
+        improved_bullets = [
+            f"Built and improved {domain} workflows using {', '.join(core_skills[:3]) if core_skills else 'core tools'}, increasing delivery speed and quality.",
+            f"Optimized project outcomes by applying {', '.join(missing_keywords[:3]) if missing_keywords else 'ATS-aligned keywords'} and measurable impact.",
+            f"Collaborated across product and engineering to ship {company or 'target'}-ready solutions with clear documentation."
+        ]
 
     optimized_summary = {
         "headline": f"{headline} targeting {company or domain.title()} roles",
@@ -44,6 +164,18 @@ def prepare_optimization_payload(
         "keywords": missing_keywords[:8],
         "skills_to_highlight": must_have_skills[:8],
         "action_verbs": missing_verbs[:5] if missing_verbs else ["built", "optimized", "designed", "shipped", "automated"],
+        "technical_skills": core_skills[:10],
+        "tool_skills": _top_skills(missing_keywords + must_have_skills, 8),
+        "ats_keywords": _top_skills(missing_keywords + must_have_skills, 10),
+        "experience_points": [_clean_text(item) for item in improved_bullets[:6]],
+        "project_points": [
+            f"{domain.title()} project with production-style README, metrics, and deployment",
+            f"{company or domain.title()}-aligned case study highlighting business impact",
+            "Portfolio refinement with clear problem statement, approach, and outcomes"
+        ],
+        "education_line": resume_data.get("education", "Not specified"),
+        "targeted_edits": _build_targeted_edits(resume_bullets, missing_keywords[:5], missing_verbs[:3]),
+        "ats_score_target": min(98, max(80, int(ats_score.get("total_score", 0) + 12)))
     }
 
     optimization_instructions = f"""
@@ -115,12 +247,17 @@ def prepare_optimization_payload(
             "keywords": optimized_summary["keywords"],
             "skills_to_highlight": optimized_summary["skills_to_highlight"],
             "action_verbs": optimized_summary["action_verbs"],
-            "sample_bullets": [
-                f"Built and improved {domain} workflows using {', '.join(core_skills[:3]) if core_skills else 'core tools'}, increasing delivery speed and quality.",
-                f"Optimized project outcomes by applying {', '.join(missing_keywords[:3]) if missing_keywords else 'ATS-aligned keywords'} and measurable impact.",
-                f"Collaborated across product and engineering to ship {company or 'target'}-ready solutions with clear documentation."
-            ],
-            "raw_resume_lines": summary
+            "technical_skills": optimized_summary["technical_skills"],
+            "tool_skills": optimized_summary["tool_skills"],
+            "ats_keywords": optimized_summary["ats_keywords"],
+            "sample_bullets": optimized_summary["experience_points"],
+            "experience_points": optimized_summary["experience_points"],
+            "project_points": optimized_summary["project_points"],
+            "education_line": optimized_summary["education_line"],
+            "targeted_edits": optimized_summary["targeted_edits"],
+            "ats_score_target": optimized_summary["ats_score_target"],
+            "raw_resume_lines": summary,
+            "ats_template_markdown": _build_ats_resume_markdown(optimized_summary)
         },
         "optimization_instructions": optimization_instructions,
         "skill_gap_analysis": {

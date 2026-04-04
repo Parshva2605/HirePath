@@ -135,7 +135,20 @@ export type AnalysisResponse = {
       keywords?: string[];
       skills_to_highlight?: string[];
       action_verbs?: string[];
+      technical_skills?: string[];
+      tool_skills?: string[];
+      ats_keywords?: string[];
       sample_bullets?: string[];
+      experience_points?: string[];
+      project_points?: string[];
+      education_line?: string;
+      targeted_edits?: Array<{
+        before?: string;
+        after?: string;
+        reason?: string;
+      }>;
+      ats_score_target?: number;
+      ats_template_markdown?: string;
       raw_resume_lines?: string[];
     };
     ats_analysis?: {
